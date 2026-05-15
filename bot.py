@@ -29,6 +29,7 @@ def handle_links(message):
     filename = "phone_download.mp4"
 
     ydl_opts = {
+        # جلب صيغة mp4 جاهزة ومدمجة لمنع الحاجة لـ ffmpeg على الموبايل والسيرفر
         'format': 'best[ext=mp4][filesize<50M]/best[filesize<50M]/best',
         'outtmpl': 'phone_download.%(ext)s', 
         'quiet': True,                          
@@ -59,4 +60,19 @@ def handle_links(message):
                 
                 bot.delete_message(message.chat.id, status_msg.message_id)
             else:
-                bot.edit_message_text("❌ لم يتم العثور على الملف بعد تحميله.", chat_id=message.chat.id, message_id=status_msg.message_
+                bot.edit_message_text("❌ لم يتم العثور على الملف بعد تحميله.", chat_id=message.chat.id, message_id=status_msg.message_id)
+
+    except Exception as e:
+        bot.edit_message_text(f"❌ تعذر تحميل هذا الرابط.\nتأكد أن الفيديو عام وحجمه مناسب.\n\nالخطأ: {str(e)[:60]}...", 
+                              chat_id=message.chat.id, message_id=status_msg.message_id)
+
+    finally:
+        if os.path.exists(filename):
+            try:
+                os.remove(filename)
+                print("🗑️ تم مسح الملف المؤقت وتنظيف المساحة.")
+            except Exception:
+                pass
+
+print(">>> البوت يعمل الآن باسم المطور أحمد السيد...")
+bot.infinity_polling()
